@@ -1,6 +1,5 @@
 import { galleryItems } from "./gallery-items.js";
 
-
 const galleryRef = document.querySelector(".gallery");
 const cardsMarkup = renderCardGalery(galleryItems);
 
