@@ -1,17 +1,17 @@
 import { galleryItems } from "./gallery-items.js";
-// Change code below this line
+
 
 const galleryRef = document.querySelector(".gallery");
-galleryRef.addEventListener('click',(e) =>{
-e.preventDefault();
-  console.log(e.currentTarget)
-  console.log(e.target);
-})
+const cardsMarkup = renderCardGalery(galleryItems);
+
+galleryRef.insertAdjacentHTML("beforeend", cardsMarkup);
+galleryRef.addEventListener("click", onClickContainerGallery);
+let instance;
 
 function renderCardGalery(elements) {
   return elements
-    .map(({preview,original,description}) => {
-    return `
+    .map(({ preview, original, description }) => {
+      return `
       <div class="gallery__item">
          <a class="gallery__link" href="${original}">
             <img
@@ -21,26 +21,35 @@ function renderCardGalery(elements) {
             alt="${description}"/>
          </a>
       </div>
-      ` })
+      `;
+    })
     .join("");
-};
+}
 
+function onClickContainerGallery(evt) {
+  evt.preventDefault();
+  if (!evt.target.classList.contains("gallery__image")) {
+    return;
+  }
+  onModalOpen(evt);
+}
 
-galleryRef.insertAdjacentHTML("beforeend", renderCardGalery(galleryItems));
-
-// console.log(galleryRef);
-// console.log(renderCardGalery(galleryItems));
-
-// console.table(galleryItems);
-{
-  /* <div class="gallery__item">
-  <a class="gallery__link" href="large-image.jpg">
-    <img
-      class="gallery__image"
-      src="small-image.jpg"
-      data-source="large-image.jpg"
-      alt="Image description"
-    />
-  </a>
-</div> */
+function onModalOpen(evt) {
+  instance = basicLightbox.create(`<img src="${evt.target.dataset.source}">`, {
+    onShow: () => {
+      window.addEventListener("keydown", onKeyPress);
+    },
+    onClose: () => {
+      window.removeEventListener("keydown", onKeyPress);
+    },
+  });
+  instance.show();
+}
+function onModalClose() {
+  instance.close();
+}
+function onKeyPress(evt) {
+  if (evt.code === "Escape" || evt.code === "Space") {
+    onModalClose();
+  }
 }
